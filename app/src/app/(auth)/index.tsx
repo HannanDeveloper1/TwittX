@@ -45,6 +45,22 @@ export default function Index() {
                 </Text>
                 <Ionicons name="arrow-forward" size={22} color="#2563eb" />
               </TouchableOpacity>
+            <View className="flex flex-row items-center gap-2 relative justify-center my-4">
+              <Text className="text-center text-white font-medium bg-blue-600 px-2 py-1 rounded-lg">
+                OR
+              </Text>
+            </View>
+            <View>
+              <TouchableOpacity
+                className="border border-white bg-none p-4 rounded-full w-full flex flex-row items-center gap-2 justify-center"
+                activeOpacity={0.8}
+              >
+                  <Ionicons name="logo-google" size={22} color="#fff" />
+                <Text className="text-center text-white font-medium text-lg">
+                  Continue with Google
+                </Text>
+              </TouchableOpacity>
+            </View>
             </View>
           </View>
         </View>
