@@ -63,7 +63,7 @@ export default function SignIn() {
               <Text className="text-lg font-sans font-medium">Password</Text>
               <View>
                 <TextInput
-                  className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans ${
+                  className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans pr-12 ${
                     focusedInput.password ? "border-blue-500" : ""
                   }`}
                   placeholder="********"

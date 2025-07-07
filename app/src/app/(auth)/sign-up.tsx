@@ -41,7 +41,7 @@ export default function SignUp() {
           </View>
           <View className="flex flex-col gap-6">
             <View className="flex flex-col gap-2">
-              <Text className="text-lg font-sans font-medium">Name</Text>
+              <Text className="text-lg font-sans font-medium">Full Name</Text>
               <TextInput
                 className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans ${
                   focusedInput.name ? "border-blue-500" : ""
@@ -93,7 +93,7 @@ export default function SignUp() {
                   </Text>
                   <View>
                     <TextInput
-                      className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans ${
+                      className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans pr-12 ${
                         focusedInput.password ? "border-blue-500" : ""
                       }`}
                       placeholder="********"
