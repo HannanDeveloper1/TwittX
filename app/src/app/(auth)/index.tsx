@@ -30,7 +30,7 @@ export default function Index() {
               </View>
             </View>
             <View>
-              <Image source={images.auth} className="size-80" />
+              <Image source={images.auth2} className="size-[28rem]" />
             </View>
             <View className="w-full">
               <TouchableOpacity
