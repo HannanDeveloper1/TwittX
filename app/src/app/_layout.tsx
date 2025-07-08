@@ -12,14 +12,14 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { authorizeUser } from "@/lib/fetchAPI/auth";
 import { useAuth } from "@/state/authStore";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ActivityIndicator, Image } from "react-native";
-import { images } from "@/constants/image";
-
+import { Alert } from "react-native";
 const MainLayout = () => {
   const { login, logout, isAuthentictated } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+
+  const [fetching, setFetching] = useState(true);
+
   const [loaded, error] = useFonts({
     Archicoco: require("../assets/fonts/Archicoco.otf"),
     Inter_400Regular,
@@ -28,41 +28,40 @@ const MainLayout = () => {
     Inter_700Bold,
   });
 
-  const [checkingAuth, setCheckingAuth] = useState(true);
-
   useEffect(() => {
-    if (!loaded && !error) return;
     const checkAuth = async () => {
+      setFetching(true);
       try {
         const res: ServerResponse = await authorizeUser();
-        if (res.success && res.user) {
+        if (res.success) {
           login(res.user);
-          if (pathname.startsWith("/(auth)")) {
+          if (pathname.startsWith("/(auth)") || pathname === "/onboarding") {
             router.replace("/(tabs)/");
           }
         } else {
           logout();
-          if (!pathname.startsWith("/(auth)")) {
-            router.replace("/sign-in");
+          if (!pathname.startsWith("/(auth)") && pathname !== "/onboarding") {
+            router.replace("/(auth)");
           }
         }
+      } catch (error) {
+        Alert.alert("Error", "Something went wrong, please try again later");
       } finally {
-        setCheckingAuth(false);
-        SplashScreen.hideAsync();
+        setFetching(false);
       }
     };
+
     checkAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    if (!fetching && (loaded || error)) {
+      SplashScreen.hideAsync();
+    }
   }, [loaded, error]);
 
-  if (!loaded || checkingAuth || isAuthentictated === undefined) {
-    return (
-      <SafeAreaView className="flex-1 flex items-center justify-center gap-10">
-        <Image source={images.logo} className="size-36" />
-        <ActivityIndicator size={30} color={"#2563eb"} />
-      </SafeAreaView>
-    );
+  if ((!loaded && !error && !fetching) || isAuthentictated === undefined) {
+    return null;
   }
+
   return <Slot />;
 };
 

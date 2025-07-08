@@ -19,7 +19,7 @@ router.post("/signup", validateBody(signUpSchema), signUp);
 
 router.post("/signin", validateBody(signInSchema), signIn);
 
-router.post("/signout", signOut);
+router.get("/signout", signOut);
 
 router.get("/", authorizeMiddleware, getUser);
 

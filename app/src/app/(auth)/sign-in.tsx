@@ -61,7 +61,6 @@ export default function SignIn() {
       } else {
         login(res.user);
         Alert.alert("Account created", res.message);
-        router.replace("/");
       }
     } catch (error) {
       console.log(error);

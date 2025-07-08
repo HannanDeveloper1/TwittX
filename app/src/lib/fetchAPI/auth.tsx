@@ -45,3 +45,12 @@ export const authorizeUser = async () => {
   const res = await req.json();
   return res;
 };
+
+export const signout = async () => {
+  const req = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/signout`, {
+    method: "GET",
+    credentials: "include",
+  });
+  const res = await req.json();
+  return res;
+};
