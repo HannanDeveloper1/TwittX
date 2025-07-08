@@ -10,7 +10,11 @@ import authRoutes from "./routes/auth.route.js";
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 app.use(helmet());
 app.use(cookieParser(ENV.COOKIE_SECRET));
 
