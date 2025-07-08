@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import { ENV } from "../config/env.js";
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -18,6 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      select: false,
       required: function () {
         return !this.isOAuth;
       },
@@ -103,6 +106,31 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", function (next) {
+  if (this.isModified("password")) {
+    const salt = bcrypt.genSaltSync(10);
+    this.password = bcrypt.hashSync(this.password, salt);
+  }
+  next();
+});
+
+userSchema.methods.comparePassword = function (password) {
+  return bcrypt.compareSync(password, this.password);
+};
+
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
+};
+
+userSchema.methods.generateToken = function () {
+  const token = jwt.sign({ id: this._id }, ENV.JWT_SECRET, {
+    expiresIn: ENV.JWT_EXPIRES_IN || "30d",
+  });
+  return token;
+};
 
 const User = mongoose.model("User", userSchema);
 export default User;

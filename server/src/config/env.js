@@ -8,4 +8,6 @@ export const ENV = {
   COOKIE_SECRET: process.env.COOKIE_SECRET,
   DB_URI: process.env.DB_URI,
   REDIS_URL: process.env.REDIS_URL,
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
 };
