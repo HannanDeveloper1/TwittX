@@ -14,3 +14,38 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Handling process.on errors and stoping the server gracefully on need
+process.on("unhandledRejection", (error) => {
+  console.log("❌ Server cannot be started due to", error.message);
+  process.exit(1);
+});
+
+process.on("uncaughtException", (error) => {
+  console.log("❌ Server cannot be started due to", error.message);
+  process.exit(1);
+});
+
+process.on("SIGTERM", () => {
+  console.log("❌ Server cannot be started due to", error.message);
+  process.exit(1);
+});
+
+process.on("SIGINT", () => {
+  console.log("❌ Server cannot be started due to", error.message);
+  process.exit(1);
+});
+
+process.on("exit", () => {
+  console.log("❌ Server cannot be started due to", error.message);
+});
+
+process.on("SIGHUP", () => {
+  console.log("❌ Server cannot be started due to", error.message);
+  process.exit(1);
+});
+
+process.on("SIGKILL", () => {
+  console.log("❌ Server cannot be started due to", error.message);
+  process.exit(1);
+});
