@@ -9,7 +9,7 @@ let server;
 const startServer = async () => {
   try {
     await connectDB();
-    await connectRedis();
+    // await connectRedis();
     server = app.listen(PORT, () =>
       console.log(`✅ Server running on port ${PORT}`)
     );

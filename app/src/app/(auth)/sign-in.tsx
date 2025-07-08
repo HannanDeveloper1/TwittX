@@ -17,6 +17,7 @@ import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signinUser } from "@/lib/fetchAPI/auth";
+import { useAuth } from "@/state/authStore";
 
 export const signinSchema = z.object({
   email: z
@@ -29,6 +30,7 @@ export const signinSchema = z.object({
 });
 export type SignInSchemaType = z.infer<typeof signinSchema>;
 export default function SignIn() {
+  const { login } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedInput, setFocusedInput] = useState({
@@ -52,11 +54,12 @@ export default function SignIn() {
   const onSubmit = async (data: SignInSchemaType) => {
     setIsSubmitting(true);
     try {
-      const res = await signinUser(data);
+      const res: ServerResponse = await signinUser(data);
       console.log(res);
       if (!res.success) {
         Alert.alert("An Error Occured", res.message);
       } else {
+        login(res.user);
         Alert.alert("Account created", res.message);
         router.replace("/");
       }

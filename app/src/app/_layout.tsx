@@ -1,5 +1,5 @@
 import "../global.css";
-import { Slot, useRouter } from "expo-router";
+import { Slot, usePathname, useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import {
   Inter_400Regular,
@@ -9,11 +9,16 @@ import {
 } from "@expo-google-fonts/inter";
 import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
-import { authorizeUser } from "@/lib/fetchAPI/auth";
-import { Alert } from "react-native";
-import { fields } from "@hookform/resolvers/ajv/src/__tests__/__fixtures__/data.js";
 
-export default function Layout() {
+import { authorizeUser } from "@/lib/fetchAPI/auth";
+import { useAuth } from "@/state/authStore";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ActivityIndicator, Image } from "react-native";
+import { images } from "@/constants/image";
+
+const MainLayout = () => {
+  const { login, logout, isAuthentictated } = useAuth();
+  const pathname = usePathname();
   const router = useRouter();
   const [loaded, error] = useFonts({
     Archicoco: require("../assets/fonts/Archicoco.otf"),
@@ -23,27 +28,42 @@ export default function Layout() {
     Inter_700Bold,
   });
 
-  const [apisCompleted, setApisCompleted] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const fetchApis = async () => {
-      const res = await authorizeUser();
-      console.log(res);
-      if (!res.success) {
-        router.replace("/sign-in");
-        setApisCompleted(false);
-      } else {
-        setApisCompleted(false);
+    if (!loaded && !error) return;
+    const checkAuth = async () => {
+      try {
+        const res: ServerResponse = await authorizeUser();
+        if (res.success && res.user) {
+          login(res.user);
+          if (pathname.startsWith("/(auth)")) {
+            router.replace("/(tabs)/");
+          }
+        } else {
+          logout();
+          if (!pathname.startsWith("/(auth)")) {
+            router.replace("/sign-in");
+          }
+        }
+      } finally {
+        setCheckingAuth(false);
+        SplashScreen.hideAsync();
       }
     };
-    fetchApis();
-    if ((apisCompleted && loaded) || (!apisCompleted && error)) {
-      SplashScreen.hideAsync();
-    }
+    checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, error]);
 
-  if (!loaded && !error) {
-    return null;
+  if (!loaded || checkingAuth || isAuthentictated === undefined) {
+    return (
+      <SafeAreaView className="flex-1 flex items-center justify-center gap-10">
+        <Image source={images.logo} className="size-36" />
+        <ActivityIndicator size={30} color={"#2563eb"} />
+      </SafeAreaView>
+    );
   }
   return <Slot />;
-}
+};
+
+export default MainLayout;

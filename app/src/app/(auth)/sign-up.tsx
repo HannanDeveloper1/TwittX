@@ -48,8 +48,10 @@ export const signupSchema = z
 export type SignUpSchemaType = z.infer<typeof signupSchema>;
 
 import { signupUser } from "@/lib/fetchAPI/auth";
+import { useAuth } from "@/state/authStore";
 
 export default function SignUp() {
+  const { login } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedInput, setFocusedInput] = useState({
@@ -77,11 +79,12 @@ export default function SignUp() {
   const onSubmit = async (data: SignUpSchemaType) => {
     setIsSubmitting(true);
     try {
-      const res = await signupUser(data);
+      const res: ServerResponse = await signupUser(data);
       console.log(res);
       if (!res.success) {
         Alert.alert("An Error Occured", res.message);
       } else {
+        login(res.user);
         Alert.alert("Account created", res.message);
         router.replace("/");
       }
