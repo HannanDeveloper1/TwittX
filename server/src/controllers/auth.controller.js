@@ -38,17 +38,17 @@ export const signUp = asyncHandler(async (req, res, next) => {
 
   res
     .status(201)
-    .json({
-      success: true,
-      message: "Signed Up successfully",
-      user,
-    })
     .cookie("jid", token, {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       httpOnly: true,
       secure: ENV.NODE_ENV === "production",
       sameSite: "lax",
       credentials: true,
+    })
+    .json({
+      success: true,
+      message: "Signed Up successfully",
+      user,
     });
 });
 
@@ -69,17 +69,17 @@ export const signIn = asyncHandler(async (req, res, next) => {
 
   res
     .status(200)
-    .json({
-      success: true,
-      message: "Signed In successfully",
-      user,
-    })
     .cookie("jid", token, {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       httpOnly: true,
       secure: ENV.NODE_ENV === "production",
       sameSite: "lax",
       credentials: true,
+    })
+    .json({
+      success: true,
+      message: "Signed In successfully",
+      user,
     });
 });
 
@@ -98,7 +98,10 @@ export const signOut = asyncHandler(async (req, res, next) => {
 });
 
 export const getUser = asyncHandler(async (req, res, next) => {
-  const user = req.user;
+  const user = await User.findOne({ _id: req.user.id });
+  if (!user) {
+    next(new ErrorHandler(400, "Unauthorized"));
+  }
 
-  res.status(200).json({ success: true, user });
+  res.status(200).json({ success: true, user, message: "User logged in" });
 });
