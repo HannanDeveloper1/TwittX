@@ -14,7 +14,6 @@ import { images } from "@/constants/image";
 import { Link, useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { z } from "zod";
-
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -46,7 +45,7 @@ export const signupSchema = z
     path: ["confirmPassword"],
   });
 
-export type SchemaType = z.infer<typeof signupSchema>;
+export type SignUpSchemaType = z.infer<typeof signupSchema>;
 
 import { signupUser } from "@/lib/fetchAPI/auth";
 
@@ -65,11 +64,17 @@ export default function SignUp() {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<SchemaType>({
+  } = useForm<SignUpSchemaType>({
     resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
-  const onSubmit = async (data: SchemaType) => {
+  const onSubmit = async (data: SignUpSchemaType) => {
     setIsSubmitting(true);
     try {
       const res = await signupUser(data);
@@ -123,8 +128,8 @@ export default function SignUp() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={() => {
+                      setFocusedInput((prev) => ({ ...prev, email: false }));
                       onBlur();
-                      setFocusedInput((prev) => ({ ...prev, name: false }));
                     }}
                     textContentType="name"
                     onFocus={() =>
@@ -171,8 +176,8 @@ export default function SignUp() {
                       })
                     }
                     onBlur={() => {
-                      onBlur();
                       setFocusedInput((prev) => ({ ...prev, email: false }));
+                      onBlur();
                     }}
                   />
                   {errors.email && (

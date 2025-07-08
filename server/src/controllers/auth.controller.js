@@ -79,6 +79,7 @@ export const signIn = asyncHandler(async (req, res, next) => {
       httpOnly: true,
       secure: ENV.NODE_ENV === "production",
       sameSite: "lax",
+      credentials: true,
     });
 });
 
