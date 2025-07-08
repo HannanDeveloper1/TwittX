@@ -26,7 +26,6 @@ export default function Layout() {
   }, [loaded, error]);
 
   if (!loaded && !error) {
-    console.log("Loading fonts...");
     return null;
   }
   return <Slot />;

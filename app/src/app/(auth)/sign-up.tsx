@@ -6,14 +6,52 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants/image";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { z } from "zod";
+
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+export const signupSchema = z
+  .object({
+    name: z
+      .string({ required_error: "*Full Name is required" })
+      .min(1, "*Full Name is required")
+      .min(3, "Full Name must be at least 3 characters")
+      .max(20, "Full Name must be at most 20 characters"),
+    email: z
+      .string({ required_error: "*Email is required" })
+      .min(1, "Email is required")
+      .email("Invalid Email"),
+    password: z
+      .string({ required_error: "*Password is required" })
+      .min(1, "*Password is required")
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character"
+      ),
+    confirmPassword: z
+      .string({ required_error: "*Confirm Password is required" })
+      .min(1, "*Confirm Password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type SchemaType = z.infer<typeof signupSchema>;
+
+import { signupUser } from "@/lib/fetchAPI/auth";
 
 export default function SignUp() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedInput, setFocusedInput] = useState({
     name: false,
@@ -22,6 +60,32 @@ export default function SignUp() {
     confirmPassword: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<SchemaType>({
+    resolver: zodResolver(signupSchema),
+  });
+
+  const onSubmit = async (data: SchemaType) => {
+    setIsSubmitting(true);
+    try {
+      const res = await signupUser(data);
+      console.log(res);
+      if (!res.success) {
+        Alert.alert("An Error Occured", res.message);
+      } else {
+        Alert.alert("Account created", res.message);
+        router.replace("/");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1">
@@ -40,28 +104,50 @@ export default function SignUp() {
             </Text>
           </View>
           <View className="flex flex-col gap-6">
-            <View className="flex flex-col gap-2">
-              <Text className="text-lg font-sans font-medium">Full Name</Text>
-              <TextInput
-                className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans ${
-                  focusedInput.name ? "border-blue-500" : ""
-                }`}
-                placeholder="John Doe"
-                autoCorrect={false}
-                autoComplete="name"
-                autoFocus
-                textContentType="name"
-                onFocus={() =>
-                  setFocusedInput({
-                    name: true,
-                    password: false,
-                    confirmPassword: false,
-                    email: false,
-                  })
-                }
-                onBlur={() => setFocusedInput({ ...focusedInput, name: false })}
-              />
-              <View className="flex flex-col gap-6">
+            <Controller
+              name="name"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="flex flex-col gap-2">
+                  <Text className="text-lg font-sans font-medium">
+                    Full Name
+                  </Text>
+                  <TextInput
+                    className={`p-4 bg-gray-50 rounded-xl border border-gray-200 font-sans ${
+                      focusedInput.name ? "border-blue-500" : ""
+                    }`}
+                    placeholder="John Doe"
+                    autoCorrect={false}
+                    autoComplete="name"
+                    autoFocus
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={() => {
+                      onBlur();
+                      setFocusedInput((prev) => ({ ...prev, name: false }));
+                    }}
+                    textContentType="name"
+                    onFocus={() =>
+                      setFocusedInput({
+                        name: true,
+                        password: false,
+                        confirmPassword: false,
+                        email: false,
+                      })
+                    }
+                  />
+                  {errors.name && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {errors.name.message}
+                    </Text>
+                  )}
+                </View>
+              )}
+            />
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
                 <View className="flex flex-col gap-2">
                   <Text className="text-lg font-sans font-medium">Email</Text>
                   <TextInput
@@ -74,6 +160,8 @@ export default function SignUp() {
                     autoCorrect={false}
                     autoComplete="email"
                     textContentType="emailAddress"
+                    value={value}
+                    onChangeText={onChange}
                     onFocus={() =>
                       setFocusedInput({
                         name: false,
@@ -82,11 +170,23 @@ export default function SignUp() {
                         email: true,
                       })
                     }
-                    onBlur={() =>
-                      setFocusedInput({ ...focusedInput, email: false })
-                    }
+                    onBlur={() => {
+                      onBlur();
+                      setFocusedInput((prev) => ({ ...prev, email: false }));
+                    }}
                   />
+                  {errors.email && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {errors.email.message}
+                    </Text>
+                  )}
                 </View>
+              )}
+            />
+            <Controller
+              name="password"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
                 <View className="flex flex-col gap-2">
                   <Text className="text-lg font-sans font-medium">
                     Password
@@ -100,6 +200,8 @@ export default function SignUp() {
                       autoComplete="password"
                       secureTextEntry={!showPassword}
                       textContentType="password"
+                      value={value}
+                      onChangeText={onChange}
                       onFocus={() =>
                         setFocusedInput({
                           name: false,
@@ -108,12 +210,13 @@ export default function SignUp() {
                           confirmPassword: false,
                         })
                       }
-                      onBlur={() =>
-                        setFocusedInput({
-                          ...focusedInput,
+                      onBlur={() => {
+                        onBlur();
+                        setFocusedInput((prev) => ({
+                          ...prev,
                           password: false,
-                        })
-                      }
+                        }));
+                      }}
                     />
                     {showPassword ? (
                       <TouchableOpacity
@@ -141,7 +244,18 @@ export default function SignUp() {
                       </TouchableOpacity>
                     )}
                   </View>
+                  {errors.password && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {errors.password.message}
+                    </Text>
+                  )}
                 </View>
+              )}
+            />
+            <Controller
+              name="confirmPassword"
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
                 <View className="flex flex-col gap-2">
                   <Text className="text-lg font-sans font-medium">
                     Confirm Password
@@ -154,6 +268,8 @@ export default function SignUp() {
                     autoComplete="password"
                     secureTextEntry={!showPassword}
                     textContentType="password"
+                    value={value}
+                    onChangeText={onChange}
                     onFocus={() =>
                       setFocusedInput({
                         name: false,
@@ -162,45 +278,53 @@ export default function SignUp() {
                         confirmPassword: true,
                       })
                     }
-                    onBlur={() =>
-                      setFocusedInput({
-                        ...focusedInput,
+                    onBlur={() => {
+                      onBlur();
+                      setFocusedInput((prev) => ({
+                        ...prev,
                         confirmPassword: false,
-                      })
-                    }
+                      }));
+                    }}
                   />
-                </View>
-                <View className="mt-4">
-                  <TouchableOpacity
-                    className="bg-blue-600 p-4 rounded-full w-full flex flex-row items-center gap-2 justify-center disabled:bg-blue-400 disabled:cursor-not-allowed"
-                    activeOpacity={0.8}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <ActivityIndicator size="small" color="#fff" />
-                        <Text className="text-center text-white font-sans font-medium text-lg">
-                          Signing Up
-                        </Text>
-                      </>
-                    ) : (
-                      <Text className="text-center text-white font-sans font-medium text-lg">
-                        Sign Up
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
-                <View className="flex flex-row items-center">
-                  <Text className="text-lg font-sans text-gray-800">
-                    Already have an account?{" "}
-                  </Text>
-                  <Link href="/sign-in">
-                    <Text className="text-lg font-sans text-blue-600 underline underline-offset-8 font-medium">
-                      Sign In
+                  {errors.confirmPassword && (
+                    <Text className="text-red-500 text-sm mt-1">
+                      {errors.confirmPassword.message}
                     </Text>
-                  </Link>
+                  )}
                 </View>
-              </View>
+              )}
+            />
+
+            <View className="mt-4">
+              <TouchableOpacity
+                className="bg-blue-600 p-4 rounded-full w-full flex flex-row items-center gap-2 justify-center disabled:bg-blue-400 disabled:cursor-not-allowed"
+                activeOpacity={0.8}
+                disabled={isSubmitting}
+                onPress={handleSubmit(onSubmit)}
+              >
+                {isSubmitting ? (
+                  <>
+                    <ActivityIndicator size="small" color="#fff" />
+                    <Text className="text-center text-white font-sans font-medium text-lg">
+                      Signing Up
+                    </Text>
+                  </>
+                ) : (
+                  <Text className="text-center text-white font-sans font-medium text-lg">
+                    Sign Up
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+            <View className="flex flex-row items-center">
+              <Text className="text-lg font-sans text-gray-800">
+                Already have an account?{" "}
+              </Text>
+              <Link href="/sign-in">
+                <Text className="text-lg font-sans text-blue-600 underline underline-offset-8 font-medium">
+                  Sign In
+                </Text>
+              </Link>
             </View>
           </View>
         </View>

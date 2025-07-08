@@ -2,16 +2,16 @@ import { z } from "zod";
 
 export const signUpSchema = z.object({
   name: z
-    .string("Full Name is required")
+    .string({ required_error: "Full Name is required" })
     .min(1, "Full Name is required")
     .min(3, "Full Name must be at least 3 characters")
     .max(20, "Full Name must be at most 20 characters"),
   email: z
-    .string("Email is required")
+    .string({ required_error: "Email is required" })
     .min(1, "Email is required")
     .email("Invalid Email"),
   password: z
-    .string("Password is required")
+    .string({ required_error: "Password is required" })
     .min(1, "Password is required")
     .min(8, "Password must be at least 8 characters")
     .regex(
@@ -22,8 +22,10 @@ export const signUpSchema = z.object({
 
 export const signInSchema = z.object({
   email: z
-    .string("Email is required")
+    .string({ required_error: "Email is required" })
     .min(1, "Email is required")
     .email("Invalid Email"),
-  password: z.string("Password is required").min(1, "Password is required"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password is required"),
 });

@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import { ENV } from "../config/env.js";
 
@@ -11,12 +13,12 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      unique: [true, "Username already exists"],
+      unique: [true, "Username is already in use"],
     },
     email: {
       type: String,
       required: true,
-      unique: [true, "Email already exists"],
+      unique: [true, "Email is already in use"],
     },
     password: {
       type: String,

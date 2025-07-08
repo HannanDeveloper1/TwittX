@@ -11,7 +11,7 @@ export const signUp = asyncHandler(async (req, res, next) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    next(new ErrorHandler(400, "User already exists"));
+    next(new ErrorHandler(400, "Email is already in use"));
   }
 
   let username;
@@ -19,11 +19,12 @@ export const signUp = asyncHandler(async (req, res, next) => {
   if (name.includes(" ")) {
     username =
       name
+        .toLowerCase()
         .split(" ")
         .map((word) => word[0] + word.slice(1))
-        .join("") + new Date();
+        .join("") + Math.floor(Math.random() * 1000000000);
   } else {
-    username = +name.slice(1) + new Date();
+    username = name.toLowerCase().slice(1) + Math.floor(Math.random() * 10000);
   }
 
   const user = await User.create({
@@ -47,6 +48,7 @@ export const signUp = asyncHandler(async (req, res, next) => {
       httpOnly: true,
       secure: ENV.NODE_ENV === "production",
       sameSite: "lax",
+      credentials: true,
     });
 });
 
