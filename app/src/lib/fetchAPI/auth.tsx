@@ -1,7 +1,6 @@
 import { SignInSchemaType } from "@/app/(auth)/sign-in";
 import { SignUpSchemaType } from "@/app/(auth)/sign-up";
 export const signupUser = async (data: SignUpSchemaType) => {
-  console.log(`${process.env.EXPO_PUBLIC_API_URL}/auth/signup`);
   const req = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/signup`, {
     method: "POST",
     headers: {

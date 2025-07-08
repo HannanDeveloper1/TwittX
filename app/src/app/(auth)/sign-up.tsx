@@ -80,7 +80,6 @@ export default function SignUp() {
     setIsSubmitting(true);
     try {
       const res: ServerResponse = await signupUser(data);
-      console.log(res);
       if (!res.success) {
         Alert.alert("An Error Occured", res.message);
       } else {
@@ -88,7 +87,7 @@ export default function SignUp() {
         Alert.alert("Account created", res.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setIsSubmitting(false);
     }

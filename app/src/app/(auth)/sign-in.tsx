@@ -55,7 +55,6 @@ export default function SignIn() {
     setIsSubmitting(true);
     try {
       const res: ServerResponse = await signinUser(data);
-      console.log(res);
       if (!res.success) {
         Alert.alert("An Error Occured", res.message);
       } else {
@@ -63,7 +62,7 @@ export default function SignIn() {
         Alert.alert("Account created", res.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setIsSubmitting(false);
     }
