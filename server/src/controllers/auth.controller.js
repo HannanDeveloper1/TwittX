@@ -79,3 +79,17 @@ export const signIn = asyncHandler(async (req, res, next) => {
       sameSite: "lax",
     });
 });
+
+export const signOut = asyncHandler(async (req, res, next) => {
+  res
+    .status(200)
+    .json({
+      success: true,
+      message: "Signed Out successfully",
+    })
+    .clearCookie("jid", {
+      httpOnly: true,
+      secure: ENV.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+});
