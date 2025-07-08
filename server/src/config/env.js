@@ -6,4 +6,5 @@ export const ENV = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
   COOKIE_SECRET: process.env.COOKIE_SECRET,
+  DB_URI: process.env.DB_URI,
 };
