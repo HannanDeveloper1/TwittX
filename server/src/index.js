@@ -29,25 +29,25 @@ process.on("uncaughtException", (error) => {
 });
 
 process.on("SIGTERM", () => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Shutting down server gracefully...");
   process.exit(1);
 });
 
 process.on("SIGINT", () => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Shutting down server gracefully...");
   process.exit(1);
 });
 
 process.on("exit", () => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Shutting down server gracefully...");
 });
 
 process.on("SIGHUP", () => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Shutting down server gracefully...");
   process.exit(1);
 });
 
 process.on("SIGKILL", () => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Shutting down server gracefully...");
   process.exit(1);
 });
