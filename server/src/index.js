@@ -1,13 +1,15 @@
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
 import { ENV } from "./config/env.js";
+import { connectRedis } from "./config/redis.js";
 
 const PORT = ENV.PORT;
 
 const startServer = async () => {
   try {
-    await connectDB();
     app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+    await connectDB();
+    await connectRedis();
   } catch (error) {
     console.log("❌ Server cannot be started due to", error.message);
   }
