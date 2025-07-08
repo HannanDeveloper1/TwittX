@@ -5,11 +5,14 @@ import { connectRedis } from "./config/redis.js";
 
 const PORT = ENV.PORT;
 
+let server;
 const startServer = async () => {
   try {
-    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
     await connectDB();
     await connectRedis();
+    server = app.listen(PORT, () =>
+      console.log(`✅ Server running on port ${PORT}`)
+    );
   } catch (error) {
     console.log("❌ Server cannot be started due to", error.message);
   }
@@ -17,37 +20,29 @@ const startServer = async () => {
 
 startServer();
 
+const gracefulShutdown = async (signal) => {
+  console.log(`❌ ${signal} received. Shutting down gracefully...`);
+
+  if (server) {
+    server.close(() => {
+      console.log("HTTP server closed");
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+};
+
 // Handling process.on errors and stoping the server gracefully on need
 process.on("unhandledRejection", (error) => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Unhandled promise rejection:", error.message);
   process.exit(1);
 });
 
 process.on("uncaughtException", (error) => {
-  console.log("❌ Server cannot be started due to", error.message);
+  console.log("❌ Uncaught exception:", error.message);
   process.exit(1);
 });
 
-process.on("SIGTERM", () => {
-  console.log("❌ Shutting down server gracefully...");
-  process.exit(1);
-});
-
-process.on("SIGINT", () => {
-  console.log("❌ Shutting down server gracefully...");
-  process.exit(1);
-});
-
-process.on("exit", () => {
-  console.log("❌ Shutting down server gracefully...");
-});
-
-process.on("SIGHUP", () => {
-  console.log("❌ Shutting down server gracefully...");
-  process.exit(1);
-});
-
-process.on("SIGKILL", () => {
-  console.log("❌ Shutting down server gracefully...");
-  process.exit(1);
-});
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));

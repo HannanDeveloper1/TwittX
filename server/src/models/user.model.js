@@ -18,10 +18,9 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-    },
-    isOAuth: {
-      type: Boolean,
-      default: false,
+      required: function () {
+        return !this.isOAuth;
+      },
     },
     privacy: {
       type: String,
