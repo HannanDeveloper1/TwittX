@@ -56,13 +56,13 @@ export default function SignIn() {
     try {
       const res: ServerResponse = await signinUser(data);
       if (!res.success) {
-        Alert.alert("An Error Occured", res.message);
+        Alert.alert("Error", res.message);
       } else {
         login(res.user);
-        Alert.alert("Account created", res.message);
+        Alert.alert("Success", res.message);
       }
     } catch (error) {
-      console.log(error.message);
+      Alert.alert("Error", error.message || "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }

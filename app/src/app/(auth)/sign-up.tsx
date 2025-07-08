@@ -16,6 +16,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signupUser } from "@/lib/fetchAPI/auth";
+import { useAuth } from "@/state/authStore";
 
 export const signupSchema = z
   .object({
@@ -46,9 +48,6 @@ export const signupSchema = z
   });
 
 export type SignUpSchemaType = z.infer<typeof signupSchema>;
-
-import { signupUser } from "@/lib/fetchAPI/auth";
-import { useAuth } from "@/state/authStore";
 
 export default function SignUp() {
   const { login } = useAuth();
@@ -81,13 +80,13 @@ export default function SignUp() {
     try {
       const res: ServerResponse = await signupUser(data);
       if (!res.success) {
-        Alert.alert("An Error Occured", res.message);
+        Alert.alert("Error", res.message);
       } else {
         login(res.user);
-        Alert.alert("Account created", res.message);
+        Alert.alert("Success", res.message);
       }
     } catch (error) {
-      console.log(error.message);
+      Alert.alert("Error", error.message || "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -129,7 +128,7 @@ export default function SignUp() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={() => {
-                      setFocusedInput((prev) => ({ ...prev, email: false }));
+                      setFocusedInput((prev) => ({ ...prev, name: false }));
                       onBlur();
                     }}
                     textContentType="name"
