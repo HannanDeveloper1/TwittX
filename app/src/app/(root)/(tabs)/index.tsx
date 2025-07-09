@@ -24,7 +24,7 @@ export default function Index() {
   };
   return (
     <SafeAreaView>
-      <View className="h-full w-full items-center justify-center flex-col">
+      <View className="h-full w-full items-center justify-center flex-col bg-[#f5f5f5]">
         <Text className="text-3xl font-bold font-sans text-center">
           Welcome, {user.name} ({user.username})
         </Text>
