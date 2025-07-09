@@ -9,7 +9,6 @@ interface User {
   posts: string[];
   followers: string[];
   following: string[];
-  status: string;
   privacy: ["public", "private", "friends"];
   friends: string[];
   status: ["offline", "online"];

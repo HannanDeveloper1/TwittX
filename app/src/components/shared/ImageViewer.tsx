@@ -11,13 +11,13 @@ import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 type Props = {
-  images: ImageSourcePropType[];
+  image: ImageSourcePropType;
   visible: boolean;
   onClose: () => void;
 };
 
 const { width, height } = Dimensions.get("screen");
-export default function ImageViewer({ images, visible, onClose }: Props) {
+export default function ImageViewer({ image, visible, onClose }: Props) {
   return (
     <Modal
       visible={visible}
@@ -51,7 +51,7 @@ export default function ImageViewer({ images, visible, onClose }: Props) {
           onStartShouldSetResponder={() => true}
         >
           <Image
-            source={images[0]}
+            source={image}
             style={{ width: "100%", height: "100%" }}
             resizeMode="contain"
             className="rounded-2xl"

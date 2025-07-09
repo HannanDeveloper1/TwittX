@@ -56,14 +56,14 @@ export default function Profile() {
             <View>
               <View className="flex flex-row items-center justify-center gap-5">
                 <Text className="font-sans">
-                  {user.posts.length || 0} Posts
+                  {user.posts?.length || 0} Posts
                 </Text>
                 <Seperator />
                 <Link
                   href={`/profile/${user._id}/followers`}
                   className="font-medium"
                 >
-                  {user.followers.length || 0} Followers
+                  {user.followers?.length || 0} Followers
                 </Link>
                 <Seperator />
                 <Link
@@ -71,6 +71,7 @@ export default function Profile() {
                   className="font-medium"
                 >
                   {user.following.length || 0} Following
+                  {user.following?.length || 0} Following
                 </Link>
               </View>
             </View>
@@ -78,7 +79,7 @@ export default function Profile() {
         </ScrollView>
         <ImageViewer
           visible={viewerVisible}
-          images={[typeof profilePic === "string" ? profilePic : images.user]}
+          image={typeof profilePic === "string" ? profilePic : images.user}
           onClose={() => setViewerVisible(false)}
         />
       </SafeAreaView>
