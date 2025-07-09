@@ -70,7 +70,6 @@ export default function Profile() {
                   href={`/profile/${user._id}/following`}
                   className="font-medium"
                 >
-                  {user.following.length || 0} Following
                   {user.following?.length || 0} Following
                 </Link>
               </View>
