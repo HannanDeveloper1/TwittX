@@ -1,11 +1,17 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { images } from "@/constants/image";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 export default function Index() {
   const router = useRouter();
   return (
@@ -70,14 +76,12 @@ export default function Index() {
           </View>
         </ScrollView>
       </SafeAreaView>
-      <View>
-        <StatusBar
-          style="dark"
-          translucent
-          animated
-          backgroundColor="#2563eb"
-        />
-      </View>
+      <StatusBar
+        barStyle="dark-content"
+        translucent
+        animated
+        backgroundColor="#2563eb"
+      />
     </>
   );
 }
