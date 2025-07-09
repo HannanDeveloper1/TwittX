@@ -3,7 +3,10 @@ interface User {
   name: string;
   username: string;
   email: string;
+  bio: string;
   password: string;
+  profilePicture: string;
+  posts: string[];
   followers: string[];
   following: string[];
   status: string;
