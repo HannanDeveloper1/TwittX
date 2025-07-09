@@ -1,18 +1,14 @@
 import {
   View,
-  Text,
-  ScrollView,
   Image,
   ImageSourcePropType,
   Modal,
   Dimensions,
   Pressable,
   TouchableOpacity,
-  StatusBar,
 } from "react-native";
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "@expo/vector-icons/Ionicons"; // Or use any icon you like
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 type Props = {
   images: ImageSourcePropType[];

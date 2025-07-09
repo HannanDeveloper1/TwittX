@@ -98,7 +98,19 @@ export const signOut = asyncHandler(async (req, res, next) => {
 });
 
 export const getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ _id: req.user.id });
+  const user = await User.findOne({ _id: req.user.id })
+    .populate({
+      path: "posts",
+      populate: {
+        path: "comments",
+      },
+    })
+    .populate({
+      path: "posts",
+      populate: {
+        path: "likes",
+      },
+    });
   if (!user) {
     next(new ErrorHandler(400, "Unauthorized"));
   }

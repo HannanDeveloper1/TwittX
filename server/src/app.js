@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import ErrorMiddleware from "./middlewares/error.middleware.js";
 import { ENV } from "./config/env.js";
 import authRoutes from "./routes/auth.route.js";
+import profileRoutes from "./routes/profile.route.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res, next) => {
   res.status(200).json("Welcome from TwittX API");
 });
 app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.use(ErrorMiddleware);
 
