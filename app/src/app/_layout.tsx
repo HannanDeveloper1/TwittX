@@ -14,7 +14,7 @@ import { authorizeUser } from "@/lib/fetchAPI/auth";
 import { useAuth } from "@/state/authStore";
 import { Alert } from "react-native";
 const MainLayout = () => {
-  const { login, logout, isAuthentictated } = useAuth();
+  const { login, logout, isAuthenticated } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -58,7 +58,7 @@ const MainLayout = () => {
     }
   }, [loaded, error]);
 
-  if ((!loaded && !error && !fetching) || isAuthentictated === undefined) {
+  if ((!loaded && !error && !fetching) || isAuthenticated === undefined) {
     return null;
   }
 
