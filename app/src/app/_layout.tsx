@@ -36,7 +36,7 @@ const MainLayout = () => {
         if (res.success) {
           login(res.user);
           if (pathname.startsWith("/(auth)") || pathname === "/onboarding") {
-            router.replace("/(tabs)/");
+            router.replace("/(root)/(tabs)/");
           }
         } else {
           logout();
