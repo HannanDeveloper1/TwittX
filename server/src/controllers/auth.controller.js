@@ -98,10 +98,7 @@ export const signOut = asyncHandler(async (req, res, next) => {
 });
 
 export const getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ _id: req.user.id });
-  if (!user) {
-    next(new ErrorHandler(400, "Unauthorized"));
-  }
+  const user = req.user;
 
   res.status(200).json({ success: true, user, message: "User logged in" });
 });
