@@ -5,9 +5,11 @@ const postSchema = new mongoose.Schema(
     content: {
       type: String,
     },
-    media: {
-      type: String,
-    },
+    media: [
+      {
+        type: String,
+      },
+    ],
     privacy: {
       type: String,
       enum: ["public", "private", "friends"],
