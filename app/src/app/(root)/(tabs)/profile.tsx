@@ -16,6 +16,8 @@ import ImageViewer from "@/components/shared/ImageViewer";
 import { signout } from "@/lib/fetchAPI/auth";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import * as Clipboard from "expo-clipboard";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 function ProfileNav() {
   const { user, logout } = useAuth();
@@ -64,6 +66,15 @@ export default function Profile() {
     user.profilePicture || images.user
   );
   const [viewerVisible, setViewerVisible] = useState(false);
+  const [copyied, setCopyied] = useState(false);
+
+  const copyUsername = async () => {
+    await Clipboard.setStringAsync(user.username);
+    setCopyied(true);
+    setTimeout(() => {
+      setCopyied(false);
+    }, 800);
+  };
 
   return (
     <>
@@ -87,12 +98,23 @@ export default function Profile() {
               >
                 {user.name}
               </Text>
-              <Text
-                className="text-center text-gray-700 text-lg"
-                numberOfLines={1}
+              <TouchableOpacity
+                onPress={copyUsername}
+                className="flex flex-row items-center gap-1.5"
+                activeOpacity={0.6}
               >
-                @{user.username}
-              </Text>
+                <Text
+                  className="text-center text-gray-700 text-lg"
+                  numberOfLines={1}
+                >
+                  @{user.username}
+                </Text>
+                {copyied ? (
+                  <Ionicons name="checkmark-sharp" size={16} color="#3b82f6" />
+                ) : (
+                  <Ionicons name="copy-outline" size={16} />
+                )}
+              </TouchableOpacity>
               {user.bio && (
                 <Text
                   className="text-center text-gray-500 text-sm"
