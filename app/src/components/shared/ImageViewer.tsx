@@ -18,9 +18,8 @@ type Props = {
   initialIndex?: number;
   onClose: () => void;
   showDelete?: boolean;
+  onDelete?: (idx: number) => void;
 };
-
-const { width, height } = Dimensions.get("screen");
 
 export default function ImageViewer({
   images,
@@ -28,6 +27,7 @@ export default function ImageViewer({
   initialIndex = 0,
   onClose,
   showDelete = false,
+  onDelete,
 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const flatListRef = useRef<FlatList>(null);
@@ -50,21 +50,17 @@ export default function ImageViewer({
     <Modal
       visible={visible}
       animationType="fade"
-      transparent
-      className="flex items-center justify-center"
+      transparent={false}
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Pressable
-        className="flex-1 bg-black/80 justify-center items-center"
-        onPress={onClose}
-      >
-        <View className="absolute top-8 right-6 z-10">
+      <View className="bg-black/90 flex-1 justify-center items-center">
+        <View style={{ position: "absolute", top: 40, right: 24, zIndex: 10 }}>
           <TouchableOpacity
             onPress={onClose}
             className="p-2 bg-black/60 rounded-full"
           >
-            <Ionicons name="close-outline" size={24} color="#fff" />
+            <Ionicons name="close-outline" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
         <FlatList
@@ -75,57 +71,55 @@ export default function ImageViewer({
           initialScrollIndex={initialIndex}
           onMomentumScrollEnd={(e) => {
             const idx = Math.round(
-              e.nativeEvent.contentOffset.x / (width * 0.9)
+              e.nativeEvent.contentOffset.x / Dimensions.get("screen").width
             );
             setCurrentIndex(idx);
           }}
           keyExtractor={(_, idx) => idx.toString()}
           renderItem={({ item }) => (
             <View
-              className="rounded-2xl justify-center items-center"
               style={{
-                width: width * 0.9,
-                height: height * 0.6,
+                width: Dimensions.get("screen").width,
+                height: Dimensions.get("screen").height * 1,
               }}
-              onStartShouldSetResponder={() => true}
+              className="bg-transparent flex justify-center items-center"
             >
               <Image
                 source={{ uri: item.uri }}
-                style={{ width: "100%", height: "100%", borderRadius: 16 }}
                 resizeMode="contain"
+                className="self-center rounded-2xl h-[75%] w-[75%]"
               />
             </View>
           )}
         />
         {/* Indicator */}
         {images.length > 1 && (
-          <View className="absolute bottom-10 left-0 right-0 flex flex-row justify-center items-center gap-1">
+          <View className="absolute bottom-[92%] left-0 right-0 flex-row justify-center items-center">
             {images.map((_, idx) => (
               <View
                 key={idx}
                 style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  marginHorizontal: 2,
                   backgroundColor: idx === currentIndex ? "#fff" : "#888",
                 }}
+                className="w-2.5 h-2.5 rounded-full mx-1"
               />
             ))}
           </View>
         )}
-      </Pressable>
-
-      <View>
-        <TouchableOpacity
-          className="border border-white bg-none p-4 rounded-full w-full flex flex-row items-center gap-2 justify-center"
-          activeOpacity={0.8}
-        >
-          <Ionicons name="basket-outline" size={22} color="#fff" />
-          <Text className="text-center text-white font-medium text-lg">
-            Delete
-          </Text>
-        </TouchableOpacity>
+        {showDelete && onDelete && (
+          <View className="absolute bottom-7 left-0 right-0 items-center">
+            <TouchableOpacity
+              className="border border-red-500 bg-transparent p-3 rounded-full min-w-32 flex-row items-center justify-center"
+              activeOpacity={0.7}
+              onPress={() => onDelete(currentIndex)}
+            >
+              <Ionicons name="trash-outline" size={18} color="#ef4444" />
+              <Text className="font-sans text-red-500 font-bold text-lg ml-2">
+                Delete
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </Modal>
   );
