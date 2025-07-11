@@ -10,3 +10,12 @@ export const createPost = async (formData: FormData) => {
   const res = await req.json();
   return res;
 };
+
+export const getUserPosts = async () => {
+  const req = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/post/user`, {
+    method: "GET",
+    credentials: "include",
+  });
+  const res = await req.json();
+  return res;
+};

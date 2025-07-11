@@ -54,3 +54,13 @@ export const createPost = asyncHandler(async (req, res, next) => {
     post,
   });
 });
+
+export const getPosts = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 });
+  res.status(200).json({
+    success: true,
+    message: "Posts fetched successfully!",
+    posts,
+  });
+});

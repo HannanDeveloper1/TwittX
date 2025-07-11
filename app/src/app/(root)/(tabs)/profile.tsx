@@ -5,8 +5,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/state/authStore";
 import { images } from "@/constants/image";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +19,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import * as Clipboard from "expo-clipboard";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { getUserPosts } from "@/lib/fetchAPI/post";
 
 function ProfileNav() {
   const { user, logout } = useAuth();
@@ -67,6 +69,15 @@ export default function Profile() {
   );
   const [viewerVisible, setViewerVisible] = useState(false);
   const [copyied, setCopyied] = useState(false);
+  const [posts, setPosts] = useState(null);
+
+  const [postsStatus, setPostsStatus] = useState<{
+    status: "fetching" | "fetched" | "error";
+    error: string | null;
+  }>({
+    status: "fetching",
+    error: null,
+  });
 
   const copyUsername = async () => {
     await Clipboard.setStringAsync(user.username);
@@ -75,6 +86,25 @@ export default function Profile() {
       setCopyied(false);
     }, 800);
   };
+
+  useEffect(() => {
+    const getPosts = async () => {
+      try {
+        const res = await getUserPosts();
+        setPosts(res.posts);
+        setPostsStatus({
+          status: "fetched",
+          error: null,
+        });
+      } catch (error) {
+        setPostsStatus({
+          status: "error",
+          error: error.message,
+        });
+      }
+    };
+    getPosts();
+  }, []);
 
   return (
     <>
@@ -126,9 +156,7 @@ export default function Profile() {
             </View>
             <View>
               <View className="flex flex-row items-center justify-center gap-5">
-                <Text className="font-sans">
-                  {user.posts?.length || 0} Posts
-                </Text>
+                <Text className="font-sans">{posts?.length || 0} Posts</Text>
                 <Seperator />
                 <Link
                   href={`/profile/${user._id}/followers`}
@@ -145,6 +173,18 @@ export default function Profile() {
                 </Link>
               </View>
             </View>
+          </View>
+          <View className="flex-1 w-full">
+            {postsStatus.status === "fetching" ? (
+              <View className="flex items-center justify-center h-full w-full flex-col gap-3">
+                <ActivityIndicator color={"#9ca3af"} size={"large"} />
+                <Text className="font-medium text-xl text-gray-500">
+                  Fetching Posts
+                </Text>
+              </View>
+            ) : (
+              <></>
+            )}
           </View>
         </ScrollView>
         <ImageViewer
