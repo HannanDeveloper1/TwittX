@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/state/authStore";
@@ -20,6 +21,7 @@ import Feather from "@expo/vector-icons/Feather";
 import * as Clipboard from "expo-clipboard";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getUserPosts } from "@/lib/fetchAPI/post";
+import PostCard from "@/components/shared/PostCard";
 
 function ProfileNav() {
   const { user, logout } = useAuth();
@@ -174,7 +176,7 @@ export default function Profile() {
               </View>
             </View>
           </View>
-          <View className="flex-1 w-full">
+          <View className="flex-1 w-full py-2 px-4">
             {postsStatus.status === "fetching" ? (
               <View className="flex items-center justify-center h-full w-full flex-col gap-3">
                 <ActivityIndicator color={"#9ca3af"} size={"large"} />
@@ -183,7 +185,16 @@ export default function Profile() {
                 </Text>
               </View>
             ) : (
-              <></>
+              <>
+                <FlatList
+                  data={posts}
+                  renderItem={({ item }) => (
+                    <PostCard post={item} author={user} />
+                  )}
+                  keyExtractor={(item) => item._id}
+                  showsVerticalScrollIndicator={false}
+                />
+              </>
             )}
           </View>
         </ScrollView>
