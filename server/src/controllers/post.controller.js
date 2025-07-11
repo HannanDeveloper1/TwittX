@@ -4,13 +4,21 @@ import ErrorHandler from "../lib/errors/ErrorHandler.js";
 import asyncHandler from "express-async-handler";
 
 export const createPost = asyncHandler(async (req, res, next) => {
-  const { content, privacy } = req.body;
+  // Accept both req.body.body (from validation) and req.body (from FormData)
+  let content, visibility;
+  if (req.body.body) {
+    content = req.body.body.content;
+    visibility = req.body.body.visibility;
+  } else {
+    content = req.body.content;
+    visibility = req.body.visibility;
+  }
   const user = req.user;
   const files = req.files || [];
 
   // At least one of content or media is required
   if (!content && (!files || files.length === 0)) {
-    next(
+    return next(
       new ErrorHandler(
         400,
         "Either content or at least one image is required to create a post."
@@ -36,7 +44,7 @@ export const createPost = asyncHandler(async (req, res, next) => {
   const post = await Post.create({
     content: content || "",
     media: mediaUrls,
-    privacy: privacy || "public",
+    privacy: visibility || "public",
     user: user._id,
   });
 

@@ -78,7 +78,7 @@ export default function Profile() {
         </ScrollView>
         <ImageViewer
           visible={viewerVisible}
-          image={typeof profilePic === "string" ? profilePic : images.user}
+          images={typeof profilePic === "string" ? profilePic : images.user}
           onClose={() => setViewerVisible(false)}
         />
       </SafeAreaView>
