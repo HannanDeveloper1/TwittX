@@ -1,12 +1,61 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import React, { useState } from "react";
 import { useAuth } from "@/state/authStore";
 import { images } from "@/constants/image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Seperator from "@/components/shared/Seperator";
-import { Link } from "expo-router";
-import ProfileNav from "@/components/layout/ProfileNav";
+import { Link, useRouter } from "expo-router";
 import ImageViewer from "@/components/shared/ImageViewer";
+import { signout } from "@/lib/fetchAPI/auth";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+
+function ProfileNav() {
+  const { user, logout } = useAuth();
+
+  const router = useRouter();
+  const onSignOut = async () => {
+    try {
+      await signout();
+      logout();
+      Alert.alert("Logged Out", "Signed out your account successfully");
+      router.replace("/(auth)");
+    } catch (error) {
+      Alert.alert(
+        "An error occured",
+        "An error occured when trying to signout, please try again later",
+        error.message
+      );
+    }
+  };
+  return (
+    <View className="bg-white flex flex-row items-center justify-between p-5 gap-3">
+      <TouchableOpacity activeOpacity={0.4}>
+        <AntDesign name="setting" size={26} />
+      </TouchableOpacity>
+      <View className="flex flex-row items-center gap-3">
+        <TouchableOpacity activeOpacity={0.4}>
+          <Feather name="edit" size={22} />
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.4} onPress={onSignOut}>
+          <AntDesign
+            name="logout"
+            size={22}
+            color={"#ef4444"}
+            className="ml-3"
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 export default function Profile() {
   const { user } = useAuth();
@@ -78,7 +127,13 @@ export default function Profile() {
         </ScrollView>
         <ImageViewer
           visible={viewerVisible}
-          images={typeof profilePic === "string" ? profilePic : images.user}
+          images={(() => {
+            if (typeof profilePic === "string") return [{ uri: profilePic }];
+            if (profilePic && profilePic.uri) return [profilePic];
+            // If images.user is a number (require), convert to uri
+            return [{ uri: Image.resolveAssetSource(profilePic).uri }];
+          })()}
+          initialIndex={0}
           onClose={() => setViewerVisible(false)}
         />
       </SafeAreaView>
