@@ -14,6 +14,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ImageViewer from "./ImageViewer";
+import { useAuth } from "@/state/authStore";
+import { useRouter } from "expo-router";
 
 type Props = {
   post: Post;
@@ -21,6 +23,9 @@ type Props = {
 };
 
 export default function PostCard({ post, author }: Props) {
+  const { user } = useAuth();
+  const router = useRouter();
+
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const [imageViewerIndex, setImageViewerIndex] = useState(0);
 
@@ -47,14 +52,26 @@ export default function PostCard({ post, author }: Props) {
     dateLabel = format(postDate, "MMM d, yyyy");
   }
 
+  const navigateToProfile = () => {
+    if (author._id === user._id) {
+      router.push("/(tabs)/profile");
+    } else {
+      router.push(`/(root)/profile/${author._id}`);
+    }
+  };
+
   return (
     <>
       <TouchableOpacity
         activeOpacity={0.7}
-        className="px-4 py-3 bg-white my-4 gap-1 rounded-lg"
+        className="px-4 py-1 bg-white my-4 gap-1 rounded-lg"
       >
         <View className="flex flex-row items-center justify-between gap-3 py-1 px-1.5">
-          <View className="flex items-center flex-row gap-2">
+          <TouchableOpacity
+            onPress={navigateToProfile}
+            activeOpacity={0.6}
+            className="flex items-center flex-row gap-2"
+          >
             <Avatar image={author.profilePicture} size={30} />
             <View className="flex flex-col items-start">
               <View className="flex flex-row items-center gap-2">
@@ -80,7 +97,7 @@ export default function PostCard({ post, author }: Props) {
                 )}
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
           <View>
             <TouchableOpacity activeOpacity={0.6}>
               <Feather name="more-vertical" size={20} color="#6b7280" />
@@ -93,6 +110,7 @@ export default function PostCard({ post, author }: Props) {
         <View className="py-2">
           {post.media && post.media[0] && (
             <TouchableOpacity
+              activeOpacity={0.5}
               onPress={() => {
                 setImageViewerIndex(0);
                 setIsImageViewerOpen(true);
@@ -115,21 +133,21 @@ export default function PostCard({ post, author }: Props) {
         </View>
         <View className="flex flex-row items-center justify-between">
           <TouchableOpacity
-            className="flex flex-row items-center gap-2 flex-1 w-full justify-center p-2"
+            className="flex flex-row items-center gap-2 flex-1 w-full justify-center px-2 py-4"
             activeOpacity={0.6}
           >
             <SimpleLineIcons name="like" size={19} color="#6b7280" />
             <Text className="text-gray-600">Like</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex flex-row items-center gap-2 flex-1 w-full justify-center p-2"
+            className="flex flex-row items-center gap-2 flex-1 w-full justify-center px-2 py-4"
             activeOpacity={0.6}
           >
             <FontAwesome name="comment-o" size={20} color="#6b7280" />
             <Text className="text-gray-600">Comment</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex flex-row items-center gap-2 flex-1 w-full justify-center p-2"
+            className="flex flex-row items-center gap-2 flex-1 w-full justify-center px-2 py-4"
             activeOpacity={0.6}
           >
             <Feather name="share-2" size={20} color="#6b7280" />
