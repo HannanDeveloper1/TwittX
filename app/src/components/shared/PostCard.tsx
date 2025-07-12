@@ -7,10 +7,12 @@ import {
   isYesterday,
   differenceInHours,
   parseISO,
+  differenceInMinutes,
 } from "date-fns";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 type Props = {
   post: Post;
@@ -26,7 +28,13 @@ export default function PostCard({ post, author }: Props) {
   let dateLabel = "";
   if (isToday(postDate)) {
     const hours = differenceInHours(new Date(), postDate);
-    dateLabel = hours < 1 ? "Just now" : `${hours}h ago`;
+    const minutes = differenceInMinutes(new Date(), postDate);
+    dateLabel =
+      hours < 1
+        ? minutes < 1
+          ? `${minutes}m ago`
+          : "Just now"
+        : `${hours}h ago`;
   } else if (isYesterday(postDate)) {
     dateLabel = "Yesterday";
   } else if (postDate.getFullYear() === new Date().getFullYear()) {
@@ -43,10 +51,26 @@ export default function PostCard({ post, author }: Props) {
       <View className="flex flex-row items-center justify-between gap-3 py-1 px-1.5">
         <View className="flex items-center flex-row gap-2">
           <Avatar image={author.profilePicture} size={30} />
-          <Text className="font-medium text-gray-700 text-lg">
-            {author.name}
-          </Text>
-          <Text className="text-gray-500 text-sm">{dateLabel}</Text>
+          <View className="flex flex-col items-start">
+            <View className="flex flex-row items-center gap-2">
+              <Text className="font-medium text-gray-700 text-lg">
+                {author.name}
+              </Text>
+              {author.verified && (
+                <SimpleLineIcons name="check" size={16} color="#2563eb" />
+              )}
+            </View>
+            <View className="flex flex-row items-center gap-1">
+              <Text className="text-gray-500 text-sm">{dateLabel}</Text>
+              {post.privacy === "private" ? (
+                <MaterialIcons name="lock-outline" size={16} color="#6b7280" />
+              ) : post.privacy === "friends" ? (
+                <Feather name="users" size={16} color="#6b7280" />
+              ) : (
+                <MaterialIcons name="public" size={16} color="#6b7280" />
+              )}
+            </View>
+          </View>
         </View>
         <View>
           <TouchableOpacity activeOpacity={0.6}>
@@ -57,7 +81,7 @@ export default function PostCard({ post, author }: Props) {
       <View className="p-2">
         <Text>{post.content}</Text>
       </View>
-      <View className="p-2">
+      <View className="py-2">
         {post.media && post.media[0] && (
           <Image
             source={{ uri: post.media[0] }}

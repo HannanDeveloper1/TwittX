@@ -22,6 +22,7 @@ import * as Clipboard from "expo-clipboard";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getUserPosts } from "@/lib/fetchAPI/post";
 import PostCard from "@/components/shared/PostCard";
+import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 function ProfileNav() {
   const { user, logout } = useAuth();
@@ -124,12 +125,17 @@ export default function Profile() {
               <Image source={profilePic} className="size-32" />
             </TouchableOpacity>
             <View className="flex flex-col items-center gap-1">
-              <Text
-                className="text-3xl font-medium font-sans text-center"
-                numberOfLines={1}
-              >
-                {user.name}
-              </Text>
+              <View className="flex flex-row items-center gap-2">
+                <Text
+                  className="text-3xl font-medium font-sans text-center"
+                  numberOfLines={1}
+                >
+                  {user.name}
+                </Text>
+                {user.verified && (
+                  <SimpleLineIcons name="check" size={16} color="#2563eb" />
+                )}
+              </View>
               <TouchableOpacity
                 onPress={copyUsername}
                 className="flex flex-row items-center gap-1.5"
@@ -176,7 +182,7 @@ export default function Profile() {
               </View>
             </View>
           </View>
-          <View className="flex-1 w-full py-2 px-4">
+          <View className="flex-1 w-full p-2">
             {postsStatus.status === "fetching" ? (
               <View className="flex items-center justify-center h-full w-full flex-col gap-3">
                 <ActivityIndicator color={"#9ca3af"} size={"large"} />
@@ -193,6 +199,7 @@ export default function Profile() {
                   )}
                   keyExtractor={(item) => item._id}
                   showsVerticalScrollIndicator={false}
+                  disableVirtualization
                 />
               </>
             )}
